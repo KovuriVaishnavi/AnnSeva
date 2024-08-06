@@ -7,6 +7,7 @@ const UserRegistration = () => {
   const [longitude, setLongitude] = useState(null);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -23,6 +24,7 @@ const UserRegistration = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSendingOtp(true);
     try {
       const response = await fetch("http://localhost:3001/api/otp", {
         method: "POST",
@@ -31,12 +33,14 @@ const UserRegistration = () => {
         },
         body: JSON.stringify(formData),
       });
+      setIsSendingOtp(false);
       if (response.status === 200) {
         setIsOtpSent(true);
       } else {
         alert("Error sending OTP");
       }
     } catch (error) {
+      setIsSendingOtp(false);
       console.error("Error:", error);
       alert("Error sending OTP");
     }
@@ -83,8 +87,6 @@ const UserRegistration = () => {
       });
 
       if (response.ok) {
-        
-
         const loca = { lat: latitude, long: longitude };
 
         response = await fetch("http://localhost:3001/api/auth/register", {
@@ -113,54 +115,67 @@ const UserRegistration = () => {
   return (
     <div className="registration-form-container">
       {!isOtpSent ? (
-        <form onSubmit={handleSubmit} className="registration-form">
-          <h2>User Registration</h2>
-          <label>
-            Organisation Name / Name:
-            <input
-              type="text"
-              placeholder="Enter Your Name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
-          </label>
-          <label>
-            Email:
-            <input
-              type="email"
-              placeholder="Enter Your Email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
-          </label>
-          <label>
-            Phone:
-            <input
-              type="text"
-              placeholder="Enter Your Mobile Number"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              required
-            />
-          </label>
-          <label>
-            Address:
-            <input
-              type="text"
-              placeholder="Enter Your Address"
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              required
-            />
-          </label>
-          <button type="submit">Register</button>
-        </form>
+        <>
+          {isSendingOtp ? (
+            <div className="loading-message">
+              <div className="spinner"></div>
+              <h2>⏳ Just a Moment!</h2>
+    <p>Good things take time. Your OTP is on its way and will arrive shortly...</p>
+  
+              <p>Your patience is appreciated!</p>
+              <button className="refresh-button" onClick={() => window.location.reload()}>Refresh</button>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="registration-form">
+              <h2>User Registration</h2>
+              <label>
+                Organisation Name / Name:
+                <input
+                  type="text"
+                  placeholder="Enter Your Name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                />
+              </label>
+              <label>
+                Email:
+                <input
+                  type="email"
+                  placeholder="Enter Your Email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                />
+              </label>
+              <label>
+                Phone:
+                <input
+                  type="text"
+                  placeholder="Enter Your Mobile Number"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  required
+                />
+              </label>
+              <label>
+                Address:
+                <input
+                  type="text"
+                  placeholder="Enter Your Address"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  required
+                />
+              </label>
+              <button type="submit">Register</button>
+            </form>
+          )}
+        </>
       ) : (
         <form onSubmit={handleOtpSubmit} className="otp-form">
           <label>

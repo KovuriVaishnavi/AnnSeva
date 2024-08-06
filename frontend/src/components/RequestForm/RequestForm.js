@@ -1,9 +1,10 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "./RequestForm.css"; // Import the CSS file
-
 const RequestForm = () => {
+  const navigate=useNavigate();
   const [formData, setFormData] = useState({
     receiverName: "john",
     receiverId: "60d5f60b8f634d3f0c8b4568",
@@ -63,8 +64,11 @@ const RequestForm = () => {
         }
       );
       console.log("Request submitted successfully", response.data);
-      toast.success("Request submitted successfully");
+      toast.success("Your request has been submitted successfully! 🌟 Your generous request is now being processed. Thank you for your patience and support!");
       setSubmitted(true); // Trigger useEffect to reset form and close modal
+
+      // Redirect to homepage
+      navigate('/homepage');
     } catch (error) {
       console.error("Error submitting request", error);
       toast.error(error.response?.data?.message || "Error submitting request");

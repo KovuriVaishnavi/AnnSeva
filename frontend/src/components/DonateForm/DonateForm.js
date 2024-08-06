@@ -1,8 +1,8 @@
+
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import React, { useState } from "react";
 import { Button, Modal } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
 import {
   FaCamera,
   FaClock,
@@ -10,18 +10,19 @@ import {
   FaUtensils,
   FaWeight,
 } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
 import "./DonateForm.css";
-import Maps from "../Maps.js";
-import donateformpic from "../images/donateformpic.jpg";
-import donateformpic2 from "../images/donateformpic2.jpg";
+
 const DonateForm = ({ request, requestId, setShowForm }) => {
   const [foodItems, setFoodItems] = useState("");
   const [quantity, setQuantity] = useState("");
   const [shelfLife, setShelfLife] = useState("");
   const [location, setLocation] = useState("");
   const [picture, setPicture] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
   const [showModal, setShowModal] = useState(true);
   const navigate = useNavigate();
 
@@ -40,7 +41,7 @@ const DonateForm = ({ request, requestId, setShowForm }) => {
       quantity,
       shelfLife,
       location,
-      picture,
+      picture, // Assuming picture is still sent to backend for future use
       donorId: user.donorId,
       donorName: user.donorName,
       location: user.location,
@@ -60,9 +61,11 @@ const DonateForm = ({ request, requestId, setShowForm }) => {
       if (!response.ok) {
         console.log("error posting donation");
       }
+     alert("Donation submitted successfully! thank you for your generous donation");  
       toast.success("Donation submitted successfully!");
       setShowModal(false);
       setShowForm(false); // Ensure the form is closed after submission
+      navigate('/user-type-selection')
       resetForm();
     } catch (error) {
       toast.error("Failed to submit donation.");
@@ -75,19 +78,25 @@ const DonateForm = ({ request, requestId, setShowForm }) => {
     setShelfLife("");
     setLocation("");
     setPicture(null);
+    setPreviewImage(null);
+  };
+
+  const handlePictureChange = (event) => {
+    const file = event.target.files[0];
+    setPicture(file); // Store the file for potential backend submission
+
+    // Create a URL to display the image preview locally
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPreviewImage(reader.result);
+      setPicture(reader.result);
+    };
+    reader.readAsDataURL(file);
   };
 
   return (
     <div className="container custom-modal">
-      <Modal
-        show={showModal}
-        onHide={() => {
-          setShowModal(false);
-          setShowForm(false); // Close the form when modal is hidden
-          navigate(`/donate`);
-        }}
-        dialogClassName="custom-modal"
-      >
+      <Modal show={showModal} onHide={() => { setShowModal(false); setShowForm(false); navigate(`/donate`); }}>
         <Modal.Header closeButton>
           <Modal.Title>Donate Food Items</Modal.Title>
         </Modal.Header>
@@ -97,8 +106,7 @@ const DonateForm = ({ request, requestId, setShowForm }) => {
               <div className="col-md-6">
                 <div className="mb-3">
                   <label className="form-label">
-                    <FaUtensils className="me-2" />
-                    Food Items:
+                    <FaUtensils className="me-2" /> Food Items:
                   </label>
                   <input
                     type="text"
@@ -110,8 +118,7 @@ const DonateForm = ({ request, requestId, setShowForm }) => {
                 </div>
                 <div className="mb-3">
                   <label className="form-label">
-                    <FaWeight className="me-2" />
-                    Quantity:
+                    <FaWeight className="me-2" /> Quantity:
                   </label>
                   <input
                     type="number"
@@ -123,8 +130,7 @@ const DonateForm = ({ request, requestId, setShowForm }) => {
                 </div>
                 <div className="mb-3">
                   <label className="form-label">
-                    <FaClock className="me-2" />
-                    Shelf Life (in hours):
+                    <FaClock className="me-2" /> Shelf Life (in hours):
                   </label>
                   <input
                     type="number"
@@ -136,8 +142,7 @@ const DonateForm = ({ request, requestId, setShowForm }) => {
                 </div>
                 <div className="mb-3">
                   <label className="form-label">
-                    <FaMapMarkerAlt className="me-2" />
-                    Location:
+                    <FaMapMarkerAlt className="me-2" /> Location:
                   </label>
                   <input
                     type="text"
@@ -149,16 +154,28 @@ const DonateForm = ({ request, requestId, setShowForm }) => {
                 </div>
                 <div className="mb-3">
                   <label className="form-label">
-                    <FaCamera className="me-2" />
-                    Picture:
+                    <FaCamera className="me-2" /> Picture:
                   </label>
                   <input
                     type="file"
-                    onChange={(e) => setPicture(e.target.files[0])}
+                    onChange={handlePictureChange}
                     className="form-control"
                     required
                   />
                 </div>
+              </div>
+              <div className="col-md-6">
+                <div className="image-preview">
+                  {previewImage ? (
+                    <img src={previewImage} alt="Uploaded Image" />
+                  ) : (
+                    "Donate FOOD"
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-md-12 text-center">
                 <Button
                   type="submit"
                   onClick={handleSubmit}
@@ -166,19 +183,6 @@ const DonateForm = ({ request, requestId, setShowForm }) => {
                 >
                   Submit Donation
                 </Button>
-              </div>
-              <div className="col-md-6">
-                <div
-                  style={{
-                    ...styles.mapBox,
-                    ...styles.mapPlaceholderText,
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  Donate FOOD
-                </div>
               </div>
             </div>
           </form>

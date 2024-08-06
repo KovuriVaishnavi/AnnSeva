@@ -1,3 +1,81 @@
-.custom-modal{
-  width:70% !important;
+.custom-modal {
+  width: 90% !important;
+}
+
+.image-preview {
+  height: 400px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden; /* Ensures that any overflow is hidden */
+}
+
+.image-preview img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain; /* Ensures the image scales while maintaining its aspect ratio */
+}
+
+.custom-modal .modal-content {
+  width: 100%; /* Ensure the modal content takes full width */
+}
+
+.modal {
+  --bs-modal-width: 800px;
+}
+
+@media (max-width: 992px) {
+  .custom-modal {
+    width: 95% !important;
+  }
+
+  .image-preview {
+    height: 300px;
+  }
+
+  .modal {
+    --bs-modal-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .custom-modal {
+    width: 100% !important;
+  }
+
+  .image-preview {
+    height: 250px;
+  }
+
+  .modal {
+    --bs-modal-width: 100%;
+  }
+
+  .form-label {
+    font-size: 14px; /* Adjust label font size for smaller screens */
+  }
+
+  .btn-success {
+    width: 100%; /* Full width button on smaller screens */
+  }
+}
+
+@media (max-width: 576px) {
+  .custom-modal {
+    width: 100% !important;
+  }
+
+  .image-preview {
+    height: 200px;
+  }
+
+  .modal {
+    --bs-modal-width: 100%;
+  }
+
+  .form-label {
+    font-size: 12px; /* Adjust label font size for phone screens */
+  }
 }
